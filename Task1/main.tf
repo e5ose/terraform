@@ -4,7 +4,6 @@ provider "aws" {
 
 resource "aws_vpc" "wordpress_vpc" {
   cidr_block = var.vpc_cidr
-
   tags = {
     Name = "wordpress-vpc"
   }
@@ -23,6 +22,7 @@ resource "aws_subnet" "public" {
     vpc_id               = aws_vpc.wordpress_vpc.id 
     cidr_block           = var.public_subnets[count.index]
     availability_zone    = "us-east-1${["a", "b", "c"][count.index]}"
+    # map_public_ip_on_launch = true 
 
     tags = {
         Name = "wordpress_public-${count.index + 1}"
@@ -109,6 +109,7 @@ resource "aws_instance" "wordpress_ec2" {
     subnet_id = aws_subnet.public[0].id
     vpc_security_group_ids = [aws_security_group.wordpress_sg.id]
     key_name = aws_key_pair.ssh_key.key_name
+    associate_public_ip_address = true
 
 
 
