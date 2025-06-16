@@ -12,6 +12,10 @@ mv wordpress/* .
 rmdir wordpress
 rm latest.zip
 
+# remove apache starting page
+rm -f /var/www/html/index.html
+
+
 # Set permissions
 chown -R apache:apache /var/www/html
 chmod -R 755 /var/www/html
