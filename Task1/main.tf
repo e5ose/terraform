@@ -21,11 +21,11 @@ resource "aws_internet_gateway" "wordpress_igw" {
 resource "aws_subnet" "public" {
     count                = 3
     vpc_id               = aws_vpc.wordpress_vpc.id 
-    cidr_block           = var.private_subnets[count.index]
+    cidr_block           = var.public_subnets[count.index]
     availability_zone    = "us-east-1${["a", "b", "c"][count.index]}"
 
     tags = {
-        Name = "wordpress_private-${count.index + 1}"
+        Name = "wordpress_public-${count.index + 1}"
     }
 }
 
@@ -100,7 +100,7 @@ resource "aws_security_group" "rds_sg" {
 
 resource "aws_key_pair" "ssh_key" {
   key_name = "wordpress"
-  public_key = file("/Users/edgar/wordpress.pem")
+  public_key = file("/Users/edgar/wordpress.pub")
 }
 
 resource "aws_instance" "wordpress_ec2" {
@@ -109,6 +109,8 @@ resource "aws_instance" "wordpress_ec2" {
     subnet_id = aws_subnet.public[0].id
     vpc_security_group_ids = [aws_security_group.wordpress_sg.id]
     key_name = aws_key_pair.ssh_key.key_name
+
+
 
     user_data = file("wordpress.sh") # Script to install wordpress in the cloud
 
@@ -130,8 +132,8 @@ resource "aws_db_instance" "mysql" {
     identifier = "mysql"
     allocated_storage = 20
     engine = "mysql"
-    engine_version = "8.0"
-    instance_class = "db.t2.micro"
+    engine_version = "8.4.3"
+    instance_class = "db.t3.micro"
     username = var.db_username
     password = var.db_password
     db_subnet_group_name    = aws_db_subnet_group.mysql_subnet_group.name
