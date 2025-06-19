@@ -22,7 +22,6 @@ resource "aws_subnet" "public" {
     vpc_id               = aws_vpc.wordpress_vpc.id 
     cidr_block           = var.public_subnets[count.index]
     availability_zone    = "us-east-1${["a", "b", "c"][count.index]}"
-    # map_public_ip_on_launch = true 
 
     tags = {
         Name = "wordpress_public-${count.index + 1}"
@@ -141,6 +140,7 @@ resource "aws_db_instance" "mysql" {
     vpc_security_group_ids = [aws_security_group.rds_sg.id]
     skip_final_snapshot = true
     publicly_accessible = false
+    
 
     tags = {
         Name = "mysql"
